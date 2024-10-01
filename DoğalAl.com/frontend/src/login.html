@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="../public/css/login-styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Giriş Yap</h1>
+            <form onsubmit="login(event)">
+                <div class="input-group">
+                    <label for="username">Kullanıcı Adı</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Giriş Yap</button>
+
+                <div class="register-link">
+                    <p>Hesabın yok mu? <a href="/register.html">Kayıt Ol</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        async function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    if (data.isFarmer) {
+                        window.location.href = '/farmer-home.html';
+                    } else {
+                        window.location.href = '/index.html';
+                    }
+                } else {
+                    alert('Geçersiz giriş bilgileri.');
+                }
+            } catch (error) {
+                console.error('Giriş işlemi sırasında hata:', error);
+                alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+            }
+        }
+    </script>
+</body>
+</html>
